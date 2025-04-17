@@ -80,7 +80,7 @@
                 thankYouMessage.style.display = 'block';
                 
                 // Send rating to backend
-                fetch('http://localhost:3000/submit-rating', {
+                fetch('https://foffeeratings.onrender.com/submit-rating', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ rating: Number(rating) })

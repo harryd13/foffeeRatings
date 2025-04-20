@@ -56,6 +56,10 @@ app.get('/ratings', async (req, res) => {
     }
 });
 
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);

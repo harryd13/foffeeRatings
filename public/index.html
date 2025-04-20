@@ -13,6 +13,7 @@
             justify-content: center;
             align-items: center;
             font-family: Arial, sans-serif;
+            position: relative;
         }
 
         .star-rating {
@@ -73,6 +74,25 @@
             cursor: pointer;
         }
 
+        #dashboardButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 16px;
+            background-color: #ffd700;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        #dashboardButton:hover {
+            background-color: #ffcd00;
+        }
+
         /* Mobile optimization */
         @media screen and (max-width: 480px) {
             .star-rating {
@@ -97,6 +117,9 @@
     </style>
 </head>
 <body>
+
+    <!-- Dashboard Button -->
+    <a href="/dashboard" id="dashboardButton">Dashboard</a>
 
     <div class="star-rating">
         <span class="star" data-rating="1">★</span>

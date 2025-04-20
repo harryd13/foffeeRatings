@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+  <h1>📊 All Ratings</h1>
+  <ul id="ratingsList">
+    <li>Loading...</li>
+  </ul>
+
+  <a href="/">
+    <button>Back to Rating</button>
+  </a>
+
+  <script>
+    async function loadRatings() {
+      try {
+        const res = await fetch('/ratings');
+        const data = await res.json();
+
+        const list = document.getElementById('ratingsList');
+        list.innerHTML = '';
+
+        if (data.length === 0) {
+          list.innerHTML = '<li>No ratings yet.</li>';
+          return;
+        }
+
+        data.forEach(r => {
+          const li = document.createElement('li');
+          li.textContent = `Rating: ${r.rating} ★ at ${new Date(r.timestamp).toLocaleString()}`;
+          list.appendChild(li);
+        });
+      } catch (err) {
+        document.getElementById('ratingsList').innerHTML = '<li>Error loading ratings</li>';
+      }
+    }
+
+    loadRatings();
+  </script>
+</body>
+</html>

@@ -1,101 +1,175 @@
-<div class="star-rating">
-    <span class="star" data-rating="1">★</span>
-    <span class="star" data-rating="2">★</span>
-    <span class="star" data-rating="3">★</span>
-    <span class="star" data-rating="4">★</span>
-    <span class="star" data-rating="5">★</span>
-</div>
-<div id="thankYouMessage" style="display: none; font-size: 24px; text-align: center;">
-    Thank you for your rating!
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Foffee Ratings</title>
+    <style>
+        body {
+            background-color: #0949a8;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
 
-
-<style>
-    body {
-        background-color: #f0f8ff;
-        margin: 0;
-        padding: 0;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: Arial, sans-serif;
-    }
-
-    .star-rating {
-        font-size: 100px; /* Increased from 100px */
-        text-align: center;
-        padding: 20px;
-    }
-    
-    .star {
-        color: #ddd;
-        cursor: pointer;
-        padding: 0 20px; /* Increased padding for larger clickable area */
-        transition: color 0.3s ease;
-        border: none;
-        background: none;
-    }
-    
-    .star:hover {
-        color: #ffd700;
-    }
-    
-    .star.selected {
-        color: #ffd700;
-    }
-
-    /* Mobile optimization */
-    @media screen and (max-width: 480px) {
         .star-rating {
-            font-size: 120px; /* Increased from 72px */
-            padding: 15px;
+            font-size: 100px;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.8s ease;
         }
-        
+
+        .star-rating.fade-out {
+            opacity: 0;
+        }
+
         .star {
-            padding: 0 15px;
-            line-height: 1.5;
+            color: #ddd;
+            cursor: pointer;
+            padding: 0 20px;
+            transition: color 0.3s ease;
+            border: none;
+            background: none;
         }
-    }
-</style>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const stars = document.querySelectorAll('.star');
-        
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                const rating = this.getAttribute('data-rating');
-                const thankYouMessage = document.getElementById('thankYouMessage');
-                
-                // Clear previous selections
-                stars.forEach(s => s.classList.remove('selected'));
-                
-                // Select stars up to the clicked one
-                for(let i = 0; i < rating; i++) {
-                    stars[i].classList.add('selected');
-                }
-                
-                // Show thank you message
-                thankYouMessage.style.display = 'block';
-                
-                // Send rating to backend
-                fetch('https://foffeeratings.onrender.com/submit-rating', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ rating: Number(rating) })
-                })
-                .then(response => response.json())
-                .then(data => console.log('Server response:', data))
-                .catch(error => console.error('Error sending rating:', error));
+        .star:hover {
+            color: #ffd700;
+        }
 
-                // Hide message and reset stars after 3 seconds
-                setTimeout(() => {
-                    thankYouMessage.style.display = 'none';
+        .star.selected {
+            color: #ffd700;
+        }
+
+        #thankYouMessage {
+            display: none;
+            font-size: 24px;
+            text-align: center;
+            color: #fff;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        #thankYouMessage.show {
+            display: block;
+            opacity: 1;
+        }
+
+        #nextButton {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: none;
+            background-color: #ffd700;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Mobile optimization */
+        @media screen and (max-width: 480px) {
+            .star-rating {
+                font-size: 120px;
+                padding: 15px;
+            }
+
+            .star {
+                padding: 0 15px;
+                line-height: 1.5;
+            }
+
+            #thankYouMessage {
+                font-size: 20px;
+            }
+
+            #nextButton {
+                font-size: 16px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="star-rating">
+        <span class="star" data-rating="1">★</span>
+        <span class="star" data-rating="2">★</span>
+        <span class="star" data-rating="3">★</span>
+        <span class="star" data-rating="4">★</span>
+        <span class="star" data-rating="5">★</span>
+    </div>
+
+    <div id="thankYouMessage">
+        <div id="messageText">Thank you for your rating!</div>
+        <br>
+        <button id="nextButton">Next</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const stars = document.querySelectorAll('.star');
+            const starContainer = document.querySelector('.star-rating');
+            const thankYouMessage = document.getElementById('thankYouMessage');
+            const messageText = document.getElementById('messageText');
+            const nextButton = document.getElementById('nextButton');
+
+            stars.forEach(star => {
+                star.addEventListener('click', function () {
+                    const rating = Number(this.getAttribute('data-rating'));
+
+                    // Highlight selected stars
                     stars.forEach(s => s.classList.remove('selected'));
-                }, 3000);
+                    for (let i = 0; i < rating; i++) {
+                        stars[i].classList.add('selected');
+                    }
+
+                    // Set message
+                    messageText.textContent = rating >= 4 
+                        ? "Thank you for your Ratings, see you Again" 
+                        : "We Thrive to do better, see you soon again";
+
+                    // Send to backend
+                    fetch('https://foffeeratings.onrender.com/submit-rating', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ rating: rating })
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log('Server response:', data))
+                    .catch(error => console.error('Error sending rating:', error));
+
+                    // Fade out stars
+                    starContainer.classList.add('fade-out');
+
+                    // After fade and short pause, show message
+                    setTimeout(() => {
+                        starContainer.style.display = 'none';
+                        thankYouMessage.classList.add('show');
+                        nextButton.style.display = 'inline-block';
+                    }, 1000); // allow 0.8s fade + 0.2s buffer
+                });
+            });
+
+            nextButton.addEventListener('click', () => {
+                // Reset
+                thankYouMessage.classList.remove('show');
+                nextButton.style.display = 'none';
+                stars.forEach(s => s.classList.remove('selected'));
+
+                // Reset star container
+                starContainer.style.display = 'flex';
+                setTimeout(() => {
+                    starContainer.classList.remove('fade-out');
+                }, 50);
             });
         });
-    });
-</script>
-
+    </script>
+</body>
+</html>
